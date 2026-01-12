@@ -228,7 +228,7 @@ nav.active #toggleImg {
 .detail-button { 
     position: absolute; 
     /* 요청하신 위치로 수정 */
-    top: 365px; 
+    top: 380px; 
     left: 740px; 
     
     width: 200px; 
