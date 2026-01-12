@@ -255,4 +255,4 @@ nav.active #toggleImg {
 /* 클릭했을 때 살짝 눌리는 느낌 (선택사항) */
 .detail-button:active {
     transform: scale(0.95);
-}    
+}
