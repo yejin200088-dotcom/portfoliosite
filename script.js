@@ -1,5 +1,3 @@
-import LiquidBackground from 'https://cdn.jsdelivr.net/npm/threejs-components@0.0.27/build/backgrounds/liquid1.min.js'
-
 const canvasEl = document.getElementById('canvas');
 const staticImg = document.getElementById('staticImg');
 const aboutCarousel = document.getElementById('aboutCarousel');
@@ -9,30 +7,30 @@ const toggle = document.getElementById("toggle");
 const toggleImg = document.getElementById("toggleImg");
 
 let app;
+
+// 파일 방식 실행을 위한 초기화 강화
 function initApp() {
     try {
-        app = LiquidBackground(canvasEl);
-        app.loadImage('image/mainpage.jpg');
-    } catch (e) {
-        console.error("초기화 에러:", e);
-    }
+        const LiquidFn = window.LiquidBackground || (window.default && window.default.LiquidBackground) || window.default;
+        if (typeof LiquidFn === 'function') {
+            app = LiquidFn(canvasEl);
+            app.loadImage('image/mainpage.jpg');
+        }
+    } catch (e) { console.error("초기화 에러:", e); }
 }
-initApp();
+window.onload = initApp;
 
 let stopTimeout;
-
 function playRipple(newPath, seconds = 2) {
     if (!app || !app.liquidPlane) return;
     clearTimeout(stopTimeout);
-    
     canvasEl.style.opacity = '1';
-    const maxStrength = 2.5; // 강도 약하게 수정
+    const maxStrength = 2.5;
 
     if (newPath) {
         app.liquidPlane.uniforms.displacementScale.value = 0;
         staticImg.src = newPath;
         app.loadImage(newPath);
-
         setTimeout(() => {
             let val = 0;
             const fadeIn = setInterval(() => {
@@ -46,29 +44,23 @@ function playRipple(newPath, seconds = 2) {
     }
 
     stopTimeout = setTimeout(() => {
-        const duration = 1200; // 정지 속도 2/3로 단축
+        const duration = 1200;
         const startTime = performance.now();
-        
         function smoothlyStop(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
             if (app && app.liquidPlane) {
                 const easeOut = 1 - Math.pow(1 - progress, 3); 
                 app.liquidPlane.uniforms.displacementScale.value = maxStrength * (1 - easeOut);
             }
-
-            if (progress < 1) {
-                requestAnimationFrame(smoothlyStop);
-            } else {
-                canvasEl.style.opacity = '0';
-                if (app.liquidPlane) app.liquidPlane.uniforms.displacementScale.value = 0;
-            }
+            if (progress < 1) { requestAnimationFrame(smoothlyStop); }
+            else { canvasEl.style.opacity = '0'; if (app.liquidPlane) app.liquidPlane.uniforms.displacementScale.value = 0; }
         }
         requestAnimationFrame(smoothlyStop);
     }, seconds * 1000);
 }
 
+// 끝에서 멈추는 캐러셀 함수
 function initCarousel(carouselId) {
     const carousel = document.getElementById(carouselId);
     if (!carousel) return () => {};
@@ -78,21 +70,21 @@ function initCarousel(carouselId) {
     let currentIdx = 0;
 
     prevBtn.addEventListener('click', () => {
-        const slides = viewport.querySelectorAll('.carousel__slide');
-        currentIdx = (currentIdx <= 0) ? slides.length - 1 : currentIdx - 1;
-        viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
+        if (currentIdx > 0) {
+            currentIdx--;
+            viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
+        }
     });
 
     nextBtn.addEventListener('click', () => {
         const slides = viewport.querySelectorAll('.carousel__slide');
-        currentIdx = (currentIdx >= slides.length - 1) ? 0 : currentIdx + 1;
-        viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
+        if (currentIdx < slides.length - 1) {
+            currentIdx++;
+            viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
+        }
     });
 
-    return () => {
-        currentIdx = 0;
-        if(viewport) viewport.scrollLeft = 0;
-    };
+    return () => { currentIdx = 0; if(viewport) viewport.scrollLeft = 0; };
 }
 
 const resetAbout = initCarousel('aboutCarousel');
@@ -103,7 +95,7 @@ document.getElementById('goAbout').addEventListener('click', (e) => {
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
     resetAbout(); 
-    playRipple('image/aboutme1.jpg', 2);
+    playRipple('image/aboutme1.jpg', 1.5); // 2.5초 수정
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -113,7 +105,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
     resetPortfolio(); 
-    playRipple('image/portfolio1.jpg', 2);
+    playRipple('image/portfolio1.jpg', 1.5); // 2.5초 수정
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -121,12 +113,6 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
 if (toggle) {
     toggle.addEventListener("click", () => {
         nav.classList.toggle("active");
-        if (nav.classList.contains("active")) {
-            toggleImg.src = "image/hamburgerout.png";
-        } else {
-            toggleImg.src = "image/hamburgerin.png";
-        }
+        toggleImg.src = nav.classList.contains("active") ? "image/hamburgerout.png" : "image/hamburgerin.png";
     });
 }
-
-window.addEventListener('load', () => playRipple(null, 3));
