@@ -8,16 +8,18 @@ const toggleImg = document.getElementById("toggleImg");
 
 let app;
 
+// 초기화 함수
 function initApp() {
     try {
-        const LiquidFn = window.LiquidBackground || (window.default && window.default.LiquidBackground) || window.default;
-        if (typeof LiquidFn === 'function') {
+        // 라이브러리가 로드되었는지 확인 후 실행
+        const LiquidFn = window.LiquidBackground || (window.default && window.default.LiquidBackground);
+        if (LiquidFn) {
             app = LiquidFn(canvasEl);
             app.loadImage('image/mainpage.jpg');
         }
     } catch (e) { console.error("초기화 에러:", e); }
 }
-window.onload = initApp;
+window.addEventListener('load', initApp);
 
 let stopTimeout;
 function playRipple(newPath, seconds = 2) {
@@ -59,67 +61,61 @@ function playRipple(newPath, seconds = 2) {
     }, seconds * 1000);
 }
 
-// [핵심 수정] 캐러셀 초기화 및 이동 로직
 function initCarousel(carouselId) {
     const carousel = document.getElementById(carouselId);
-    if (!carousel) return { reset: () => {}, updateSlide: () => {} };
+    if (!carousel) return { reset: () => {} };
     const viewport = carousel.querySelector('.carousel__viewport');
     const prevBtn = carousel.querySelector('.prev');
     const nextBtn = carousel.querySelector('.next');
     let currentIdx = 0;
 
-    function updateSlide(idx, isMenuClick = false) {
+    function updateSlide(idx) {
         const slides = viewport.querySelectorAll('.carousel__slide');
-        if (idx < 0 || idx >= slides.length) return;
-        
         currentIdx = idx;
         const currentSlide = slides[currentIdx];
+        
+        // 이미지 경로 추출
         const bgImg = currentSlide.style.backgroundImage.slice(5, -2).replace(/"/g, "");
 
         // 슬라이드 이동
         viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
 
-        // 메뉴 클릭으로 온 게 아닐 때만(화살표 이동 시에만) 여기서 물결 실행
-        // (메뉴 클릭은 아래 별도 이벤트에서 playRipple을 직접 쏘기 때문)
-        if (!isMenuClick) {
-            const effectDuration = (carouselId === 'aboutCarousel' && currentIdx === 6) ? 5 : 1.5;
-            playRipple(bgImg, effectDuration);
-        }
+        // 효과 실행 (어바웃미 7번은 5초, 나머지는 1.5초)
+        const duration = (carouselId === 'aboutCarousel' && currentIdx === 6) ? 5 : 1.5;
+        playRipple(bgImg, duration);
     }
 
     prevBtn.addEventListener('click', () => { if (currentIdx > 0) updateSlide(currentIdx - 1); });
-    nextBtn.addEventListener('click', () => { if (currentIdx < slides.length - 1) updateSlide(currentIdx + 1); });
+    nextBtn.addEventListener('click', () => { 
+        const slides = viewport.querySelectorAll('.carousel__slide');
+        if (currentIdx < slides.length - 1) updateSlide(currentIdx + 1); 
+    });
 
     return {
-        reset: () => { 
-            currentIdx = 0; 
-            if(viewport) viewport.scrollLeft = 0; 
-        },
-        updateSlide: updateSlide
+        reset: () => { currentIdx = 0; if(viewport) viewport.scrollLeft = 0; }
     };
 }
 
 const carouselAbout = initCarousel('aboutCarousel');
 const carouselPortfolio = initCarousel('portfolioCarousel');
 
-// ABOUT ME 메뉴 클릭
+// 메뉴 클릭 이벤트 (기존 물결 효과 살림)
 document.getElementById('goAbout').addEventListener('click', (e) => {
     e.preventDefault();
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
-    carouselAbout.reset(); // 인덱스 0으로 초기화
-    playRipple('image/aboutme1.jpg', 2.5); // 메인 메뉴 클릭 물결 효과 (사라졌던 것 복구!)
+    carouselAbout.reset();
+    playRipple('image/aboutme1.jpg', 2.5); // 세 번 나타나던 그 효과 복구!
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
 
-// PORTFOLIO 메뉴 클릭
 document.getElementById('goPortfolio').addEventListener('click', (e) => {
     e.preventDefault();
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
-    carouselPortfolio.reset(); // 인덱스 0으로 초기화
-    playRipple('image/portfolio1.jpg', 2.5); // 메인 메뉴 클릭 물결 효과 복구!
+    carouselPortfolio.reset();
+    playRipple('image/portfolio1.jpg', 2.5); // 세 번 나타나던 그 효과 복구!
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -131,4 +127,5 @@ if (toggle) {
     });
 }
 
-window.addEventListener('load', () => playRipple(null, 3));
+// 첫 로딩 시 효과
+window.addEventListener('load', () => setTimeout(() => playRipple(null, 3), 500));
