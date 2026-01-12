@@ -67,7 +67,7 @@ nav {
     width: 80px; height: 80px;
     display: flex; 
     position: fixed; 
-    top: 105px; 
+    top: 75px; 
     /* 기존 20px에서 50px로 수정 (30px만큼 왼쪽으로 이동) */
     right: 50px; 
     
@@ -139,14 +139,14 @@ nav ul a {
 /* [추가] 메뉴가 열렸을 때 (햄버거 아웃) 아이콘만 세로 10px 축소 */
 nav.active #toggleImg {
     /* 기존 250px에서 10px 줄인 240px 적용 */
-    height: 200px !important; 
+    height: 2180px !important; 
     margin-right: 30px;
     
     /* 세로가 줄어들 때 비율이 깨지지 않게 하려면 아래 속성이 중요합니다 */
     object-fit: contain; 
     
     /* 만약 위치가 위로 들려 보인다면 미세 조정 */
-    transform: translate(-0%, -0%) translateY(5px); 
+    transform: translate(-0%, -0%) translateY(0px); 
 }
 
 
