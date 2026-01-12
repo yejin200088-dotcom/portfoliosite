@@ -26,7 +26,7 @@ function playRipple(newPath, seconds = 2) {
     clearTimeout(stopTimeout);
     
     canvasEl.style.opacity = '1';
-    const maxStrength = 2.5; 
+    const maxStrength = 3; 
 
     if (newPath) {
         app.liquidPlane.uniforms.displacementScale.value = 0;
