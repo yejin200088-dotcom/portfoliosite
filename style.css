@@ -231,8 +231,8 @@ nav.active #toggleImg {
     top: 380px; 
     left: 735px; 
     
-    width: 225px; 
-    height: 225px; 
+    width: 205px; 
+    height: 205px; 
     z-index: 50; 
     
     /* 애니메이션을 위한 트랜지션 추가 */
