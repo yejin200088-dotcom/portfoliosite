@@ -69,7 +69,6 @@ function playRipple(newPath, seconds = 2) {
     }, seconds * 1000);
 }
 
-// [핵심 수정 부분] 슬라이드 기능 및 물결 연결
 function initCarousel(carouselId) {
     const carousel = document.getElementById(carouselId);
     if (!carousel) return { reset: () => {} };
@@ -81,29 +80,24 @@ function initCarousel(carouselId) {
     function updateSlide(idx) {
         const slides = viewport.querySelectorAll('.carousel__slide');
         currentIdx = idx;
-        const currentSlide = slides[currentIdx];
         
-        // 이미지 경로 추출
-        const bgImg = currentSlide.style.backgroundImage.slice(5, -2).replace(/"/g, "");
-
-        // 슬라이드 이동
+        // 슬라이드 이동 (물결 없이 사진만 이동)
         viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
 
-        // 물결 효과 실행 (7번 슬라이드는 5초, 나머지는 1.5초)
-        const duration = (carouselId === 'aboutCarousel' && currentIdx === 6) ? 5 : 1.5;
-        playRipple(bgImg, duration);
+        // [추가] 7번 사진(idx 6)에 도달했을 때만 특별히 물결 5초 실행!
+        if (carouselId === 'aboutCarousel' && currentIdx === 6) {
+            const bgImg = slides[currentIdx].style.backgroundImage.slice(5, -2).replace(/"/g, "");
+            playRipple(bgImg, 5);
+        }
     }
 
-    // 이전 버튼: 0보다 클 때만 작동
     prevBtn.addEventListener('click', () => {
-        if (currentIdx > 0) {
-            updateSlide(currentIdx - 1);
-        }
+        if (currentIdx > 0) updateSlide(currentIdx - 1);
     });
 
-    // 다음 버튼: 마지막 슬라이드보다 작을 때만 작동 (멈춤 기능)
     nextBtn.addEventListener('click', () => {
         const slides = viewport.querySelectorAll('.carousel__slide');
+        // 마지막 번호에서 멈춤 (더 이상 넘어가지 않음)
         if (currentIdx < slides.length - 1) {
             updateSlide(currentIdx + 1);
         }
@@ -125,7 +119,7 @@ document.getElementById('goAbout').addEventListener('click', (e) => {
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
     carouselAbout.reset(); 
-    playRipple('image/aboutme1.jpg', 1.5);
+    playRipple('image/aboutme1.jpg', 1.5); // 처음 진입 시에만 물결
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -135,7 +129,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
     carouselPortfolio.reset(); 
-    playRipple('image/portfolio1.jpg', 1.5);
+    playRipple('image/portfolio1.jpg', 1.5); // 처음 진입 시에만 물결
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
