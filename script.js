@@ -103,7 +103,7 @@ document.getElementById('goAbout').addEventListener('click', (e) => {
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
     resetAbout(); 
-    playRipple('image/aboutme1.jpg', 2);
+    playRipple('image/aboutme1.jpg', 1.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -113,7 +113,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
     resetPortfolio(); 
-    playRipple('image/portfolio1.jpg', 2);
+    playRipple('image/portfolio1.jpg', 1.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
