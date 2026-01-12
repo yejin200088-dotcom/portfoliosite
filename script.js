@@ -81,10 +81,17 @@ function initCarousel(carouselId) {
         const slides = viewport.querySelectorAll('.carousel__slide');
         currentIdx = idx;
         
-        // 슬라이드 이동 (물결 없이 사진만 이동)
+        // 슬라이드 이동
         viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
 
-        // [추가] 7번 사진(idx 6)에 도달했을 때만 특별히 물결 5초 실행!
+        // [추가] 마지막 페이지면 오른쪽 버튼 숨기기, 아니면 보이기
+        if (currentIdx === slides.length - 1) {
+            nextBtn.style.display = 'none'; // 마지막이면 사라짐
+        } else {
+            nextBtn.style.display = 'flex'; // 아니면 다시 나타남
+        }
+
+        // 7번 사진(idx 6) 도착 시 5초 물결 효과
         if (carouselId === 'aboutCarousel' && currentIdx === 6) {
             const bgImg = slides[currentIdx].style.backgroundImage.slice(5, -2).replace(/"/g, "");
             playRipple(bgImg, 5);
@@ -97,7 +104,6 @@ function initCarousel(carouselId) {
 
     nextBtn.addEventListener('click', () => {
         const slides = viewport.querySelectorAll('.carousel__slide');
-        // 마지막 번호에서 멈춤 (더 이상 넘어가지 않음)
         if (currentIdx < slides.length - 1) {
             updateSlide(currentIdx + 1);
         }
@@ -107,6 +113,7 @@ function initCarousel(carouselId) {
         reset: () => { 
             currentIdx = 0; 
             if(viewport) viewport.scrollLeft = 0; 
+            nextBtn.style.display = 'flex'; // 메뉴 리셋 시 버튼도 다시 보이게
         } 
     };
 }
@@ -119,7 +126,7 @@ document.getElementById('goAbout').addEventListener('click', (e) => {
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
     carouselAbout.reset(); 
-    playRipple('image/aboutme1.jpg', 1.5); // 처음 진입 시에만 물결
+    playRipple('image/aboutme1.jpg', 1.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -129,7 +136,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
     carouselPortfolio.reset(); 
-    playRipple('image/portfolio1.jpg', 1.5); // 처음 진입 시에만 물결
+    playRipple('image/portfolio1.jpg', 1.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
