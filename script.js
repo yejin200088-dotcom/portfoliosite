@@ -8,35 +8,27 @@ const toggleImg = document.getElementById("toggleImg");
 
 let app;
 
-// 물결 초기화 (안전장치 강화)
+// [수정] 라이브러리가 로드될 때까지 기다리는 함수
 function initApp() {
-    try {
-        // 창이 다 열리고 라이브러리가 로드되었는지 확인
+    const checkLibrary = setInterval(() => {
         const LiquidFn = window.LiquidBackground || (window.default && window.default.LiquidBackground);
         
         if (typeof LiquidFn === 'function') {
+            clearInterval(checkLibrary); // 찾았으면 반복 중단
             app = LiquidFn(canvasEl);
             app.loadImage('image/mainpage.jpg');
             console.log("물결 엔진 가동 성공!");
-        } else {
-            console.error("물결 라이브러리를 찾을 수 없습니다. HTML 하단에 주소를 확인하세요.");
+            playRipple(null, 3); // 첫 화면 물결 시작
         }
-    } catch (e) {
-        console.error("초기화 에러:", e);
-    }
+    }, 100); // 0.1초마다 확인
 }
 
-// 창이 뜨자마자 초기화 실행
-window.addEventListener('load', initApp);
+initApp(); // 즉시 실행
 
 let stopTimeout;
 
 function playRipple(newPath, seconds = 2) {
-    // app이나 liquidPlane이 없으면 강제로 다시 체크
-    if (!app || !app.liquidPlane) {
-        initApp(); // 수동 재호출
-        if(!app) return;
-    }
+    if (!app || !app.liquidPlane) return;
 
     clearTimeout(stopTimeout);
     canvasEl.style.opacity = '1';
@@ -83,7 +75,6 @@ function playRipple(newPath, seconds = 2) {
     }, seconds * 1000);
 }
 
-// 캐러셀 로직
 function initCarousel(carouselId) {
     const carousel = document.getElementById(carouselId);
     if (!carousel) return { reset: () => {} };
@@ -96,14 +87,11 @@ function initCarousel(carouselId) {
         const slides = viewport.querySelectorAll('.carousel__slide');
         currentIdx = idx;
         const currentSlide = slides[currentIdx];
-        
-        // 이미지 경로 자동 추출
         const bgImg = currentSlide.style.backgroundImage.slice(5, -2).replace(/"/g, "");
 
-        // 슬라이드 이동
         viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
 
-        // [효과] 어바웃미 7번(idx 6)은 5초, 나머지는 1.5초
+        // 어바웃미 7번(idx 6)일 때만 5초간 물결 유지
         const duration = (carouselId === 'aboutCarousel' && currentIdx === 6) ? 5 : 1.5;
         playRipple(bgImg, duration);
     }
@@ -125,7 +113,7 @@ document.getElementById('goAbout').addEventListener('click', (e) => {
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
     carouselAbout.reset();
-    playRipple('image/aboutme1.jpg', 2.5); // 메뉴 클릭 물결!
+    playRipple('image/aboutme1.jpg', 2.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -135,7 +123,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
     carouselPortfolio.reset();
-    playRipple('image/portfolio1.jpg', 2.5); // 메뉴 클릭 물결!
+    playRipple('image/portfolio1.jpg', 2.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
 });
@@ -146,6 +134,3 @@ if (toggle) {
         toggleImg.src = nav.classList.contains("active") ? "image/hamburgerout.png" : "image/hamburgerin.png";
     });
 }
-
-// 첫 화면 물결
-window.addEventListener('load', () => setTimeout(() => playRipple(null, 3), 500));
