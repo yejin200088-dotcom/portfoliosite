@@ -26,7 +26,7 @@ function playRipple(newPath, seconds = 2) {
     clearTimeout(stopTimeout);
     
     canvasEl.style.opacity = '1';
-    const maxStrength = 2.5; // 강도 약하게 수정
+    const maxStrength = 2.5; 
 
     if (newPath) {
         app.liquidPlane.uniforms.displacementScale.value = 0;
@@ -46,7 +46,7 @@ function playRipple(newPath, seconds = 2) {
     }
 
     stopTimeout = setTimeout(() => {
-        const duration = 1200; // 정지 속도 2/3로 단축
+        const duration = 1200; 
         const startTime = performance.now();
         
         function smoothlyStop(currentTime) {
@@ -69,40 +69,62 @@ function playRipple(newPath, seconds = 2) {
     }, seconds * 1000);
 }
 
+// [핵심 수정 부분] 슬라이드 기능 및 물결 연결
 function initCarousel(carouselId) {
     const carousel = document.getElementById(carouselId);
-    if (!carousel) return () => {};
+    if (!carousel) return { reset: () => {} };
     const viewport = carousel.querySelector('.carousel__viewport');
     const prevBtn = carousel.querySelector('.prev');
     const nextBtn = carousel.querySelector('.next');
     let currentIdx = 0;
 
-    prevBtn.addEventListener('click', () => {
+    function updateSlide(idx) {
         const slides = viewport.querySelectorAll('.carousel__slide');
-        currentIdx = (currentIdx <= 0) ? slides.length - 1 : currentIdx - 1;
+        currentIdx = idx;
+        const currentSlide = slides[currentIdx];
+        
+        // 이미지 경로 추출
+        const bgImg = currentSlide.style.backgroundImage.slice(5, -2).replace(/"/g, "");
+
+        // 슬라이드 이동
         viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
+
+        // 물결 효과 실행 (7번 슬라이드는 5초, 나머지는 1.5초)
+        const duration = (carouselId === 'aboutCarousel' && currentIdx === 6) ? 5 : 1.5;
+        playRipple(bgImg, duration);
+    }
+
+    // 이전 버튼: 0보다 클 때만 작동
+    prevBtn.addEventListener('click', () => {
+        if (currentIdx > 0) {
+            updateSlide(currentIdx - 1);
+        }
     });
 
+    // 다음 버튼: 마지막 슬라이드보다 작을 때만 작동 (멈춤 기능)
     nextBtn.addEventListener('click', () => {
         const slides = viewport.querySelectorAll('.carousel__slide');
-        currentIdx = (currentIdx >= slides.length - 1) ? 0 : currentIdx + 1;
-        viewport.scrollTo({ left: viewport.offsetWidth * currentIdx, behavior: 'smooth' });
+        if (currentIdx < slides.length - 1) {
+            updateSlide(currentIdx + 1);
+        }
     });
 
-    return () => {
-        currentIdx = 0;
-        if(viewport) viewport.scrollLeft = 0;
+    return { 
+        reset: () => { 
+            currentIdx = 0; 
+            if(viewport) viewport.scrollLeft = 0; 
+        } 
     };
 }
 
-const resetAbout = initCarousel('aboutCarousel');
-const resetPortfolio = initCarousel('portfolioCarousel');
+const carouselAbout = initCarousel('aboutCarousel');
+const carouselPortfolio = initCarousel('portfolioCarousel');
 
 document.getElementById('goAbout').addEventListener('click', (e) => {
     e.preventDefault();
     portfolioCarousel.style.display = 'none';
     aboutCarousel.style.display = 'block';
-    resetAbout(); 
+    carouselAbout.reset(); 
     playRipple('image/aboutme1.jpg', 1.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
@@ -112,7 +134,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
     e.preventDefault();
     aboutCarousel.style.display = 'none';
     portfolioCarousel.style.display = 'block';
-    resetPortfolio(); 
+    carouselPortfolio.reset(); 
     playRipple('image/portfolio1.jpg', 1.5);
     nav.classList.remove('active');
     toggleImg.src = "image/hamburgerin.png";
@@ -121,11 +143,7 @@ document.getElementById('goPortfolio').addEventListener('click', (e) => {
 if (toggle) {
     toggle.addEventListener("click", () => {
         nav.classList.toggle("active");
-        if (nav.classList.contains("active")) {
-            toggleImg.src = "image/hamburgerout.png";
-        } else {
-            toggleImg.src = "image/hamburgerin.png";
-        }
+        toggleImg.src = nav.classList.contains("active") ? "image/hamburgerout.png" : "image/hamburgerin.png";
     });
 }
 
