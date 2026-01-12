@@ -67,10 +67,9 @@ nav {
     width: 80px; height: 80px;
     display: flex; 
     position: fixed; 
-    top: 75px; 
-    /* 기존 20px에서 50px로 수정 (30px만큼 왼쪽으로 이동) */
+    /* [수정] 75px -> 85px로 변경 (글자와 배경이 10px 내려감) */
+    top: 85px; 
     right: 50px; 
-    
     align-items: center; 
     border-radius: 40px; 
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -105,22 +104,20 @@ nav ul a {
     background: none; 
     border: 0; 
     cursor: pointer; 
-    
-    /* [수정] 클릭 영역을 이미지 크기인 250px와 동일하게 맞춤 */
     width: 220px;  
     height: 220px; 
-    
     display: flex; 
     align-items: center; 
     justify-content: center; 
     flex-shrink: 0;
-    
-    /* 위치 설정 */
     position: absolute; 
-    right: -85px; /* 시각적으로 둥근 네이비바 끝에 맞추기 위한 보정 */
-    top: 50%;
-    transform: translateY(-50%); /* 세로 정중앙 배치 */
+    right: -85px; 
     
+    /* [수정] 50% -> calc(50% - 10px)로 변경 */
+    /* nav가 내려간 10px만큼 여기서 다시 올려서 아이콘 위치를 고정합니다. */
+    top: calc(50% - 10px); 
+    
+    transform: translateY(-50%); 
     z-index: 1001;
     padding: 0;
     margin: 0;
