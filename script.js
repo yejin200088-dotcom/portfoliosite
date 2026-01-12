@@ -94,7 +94,7 @@ function initCarousel(carouselId) {
         // 7번 사진(idx 6) 도착 시 5초 물결 효과
         if (carouselId === 'aboutCarousel' && currentIdx === 6) {
             const bgImg = slides[currentIdx].style.backgroundImage.slice(5, -2).replace(/"/g, "");
-            playRipple(bgImg, 5);
+            playRipple(bgImg, 4);
         }
     }
 
