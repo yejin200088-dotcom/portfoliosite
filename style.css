@@ -228,11 +228,11 @@ nav.active #toggleImg {
 .detail-button { 
     position: absolute; 
     /* 요청하신 위치로 수정 */
-    top: 365px; 
+    top: 380px; 
     left: 735px; 
     
-    width: 235px; 
-    height: 235px; 
+    width: 225px; 
+    height: 225px; 
     z-index: 50; 
     
     /* 애니메이션을 위한 트랜지션 추가 */
