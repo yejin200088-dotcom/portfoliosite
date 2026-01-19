@@ -59,15 +59,13 @@ body, html {
     position: relative;
 }
 
-/* --- 네비게이션 최종 통합 --- */
-/* --- 네비게이션 최종 통합 --- */
+/* --- 네비게이션 --- */
 nav {
     z-index: 1000;
     background: transparent;
     width: 80px; height: 80px;
     display: flex; 
     position: fixed; 
-    /* [수정] 75px -> 70px로 변경 (전체 배경바가 5px 위로 상승) */
     top: 70px; 
     right: 50px; 
     align-items: center; 
@@ -75,10 +73,8 @@ nav {
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 나머지 속성들(nav.active, nav ul 등)은 그대로 유지하시면 됩니다. */
-
 nav.active { 
-    width: 500px; /* 메뉴 3개 충분한 너비 */
+    width: 500px; 
     background: linear-gradient(135deg, rgba(255, 165, 0, 0.5), rgba(168, 118, 170, 0.5));
     backdrop-filter: blur(10px);
 }
@@ -88,7 +84,7 @@ nav ul {
     margin: 0; padding: 0 0 0 25px;
     width: 100%; opacity: 0;
     transition: opacity 0.3s ease;
-    overflow: visible; /* 아이콘이 잘리지 않게 함 */
+    overflow: visible;
 }
 
 nav.active ul { opacity: 1; }
@@ -99,7 +95,6 @@ nav ul a {
     text-transform: uppercase; white-space: nowrap;
 }
 
-/* 4. 아이콘 버튼 영역 (아이콘 이미지 크기와 똑같이 설정) */
 .icon { 
     background: none; 
     border: 0; 
@@ -112,12 +107,7 @@ nav ul a {
     flex-shrink: 0;
     position: absolute; 
     right: -85px; 
-    
-    /* [수정] 50% -> calc(50% + 10px) */
-    /* 설명: nav가 5px 올라갔는데 아이콘은 5px 내려가야 하므로, 
-       부모 대비 총 10px을 아래로 밀어내야 결과적으로 화면에서 5px 내려옵니다. */
     top: calc(50% + 10px); 
-    
     transform: translateY(-50%); 
     z-index: 1001;
     padding: 0;
@@ -125,70 +115,29 @@ nav ul a {
     outline: none;
 }
 
-/* 5. 아이콘 이미지 (버튼 안에 꽉 차게) */
-/* 기본 상태 (햄버거 인) */
 #toggleImg { 
     width: 220px !important; 
     height: 220px !important; 
     transform: translateY(12px);
-    /* ... 기존 속성 유지 ... */
 }
 
-/* [추가] 메뉴가 열렸을 때 (햄버거 아웃) 아이콘만 세로 10px 축소 */
 nav.active #toggleImg {
-    /* 기존 250px에서 10px 줄인 240px 적용 */
     height: 200px !important; 
     margin-right: 30px;
-    
-    /* 세로가 줄어들 때 비율이 깨지지 않게 하려면 아래 속성이 중요합니다 */
     object-fit: contain; 
-    
-    /* 만약 위치가 위로 들려 보인다면 미세 조정 */
     transform: translate(-0%, -0%) translateY(0px); 
 }
 
-
-
-/* 슬라이드 버튼 디자인 수정 */
+/* 슬라이드 버튼 */
 .carousel__btn {
     position: absolute;
     top: 50%; 
-    /* 기존 1.5배 확대를 위해 scale(1.5) 추가 */
-    transform: translateY(-50%) scale(1.5); 
-    
-    width: 50px; 
-    height: 50px;
-    
-    /* 1. 배경 투명 및 선 제거 */
-    background: transparent !important; 
-    backdrop-filter: none !important;
-    border: none !important; 
-    
-    /* 2. 기본 색상 블랙 */
-    color: #000 !important; 
-    cursor: pointer; 
-    z-index: 20; 
-    border-radius: 50%;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.carousel__btn {
-    position: absolute;
-    top: 50%; 
-    /* 1.5배에서 2배(scale(2))로 상향 조정 */
     transform: translateY(-50%) scale(3); 
-    
     width: 50px; 
     height: 50px;
-    
-    /* 배경 투명 및 선 제거 유지 */
     background: transparent !important; 
     border: none !important; 
     outline: none;
-    
     color: #000 !important; 
     cursor: pointer; 
     z-index: 20; 
@@ -198,61 +147,70 @@ nav.active #toggleImg {
     transition: all 0.3s ease;
 }
 
-/* 호버 효과 */
 .carousel__btn:hover { 
     opacity: 0.5; 
-    transform: translateY(-50%) scale(2.2); /* 호버 시 아주 살짝 더 커짐 */
+    transform: translateY(-50%) scale(3.2); 
 }
 
-/* 화살표 모양 (두께 보정) */
 .carousel__btn::before {
     content: ''; 
-    width: 12px; /* 살짝 키움 */
-    height: 12px; /* 살짝 키움 */
-    /* 2배로 커진 만큼 화살표 선 두께도 3px로 보강하여 선명하게 만듦 */
+    width: 12px; 
+    height: 12px; 
     border-top: 5px solid #000; 
     border-right: 5px solid #000; 
     display: inline-block;
 }
 
-/* 2배로 커졌기 때문에 버튼이 화면 끝에 너무 붙지 않도록 위치 미세 조정 */
 .prev { left: 55px; }
 .prev::before { transform: rotate(-135deg); margin-left: 6px; }
 
 .next { right: 55px; }
 .next::before { transform: rotate(45deg); margin-right: 6px; }
 
-/* 디테일 버튼 위치 및 스타일 */
+/* 디테일 버튼 */
 .detail-button { 
     position: absolute; 
-    /* 요청하신 위치로 수정 */
     top: 375px; 
     left: 740px; 
-    
     width: 200px; 
     height: 200px; 
     z-index: 50; 
-    
-    /* 애니메이션을 위한 트랜지션 추가 */
     transition: transform 0.3s ease-in-out, filter 0.3s ease;
 }
 
-/* 이미지 크기 고정 */
 .detail-button img { 
     width: 100%; 
     height: 100%; 
     object-fit: contain; 
 }
 
-/* 마우스를 올렸을 때(호버) 효과 */
 .detail-button:hover { 
-    /* 1.1배 커지는 효과 */
     transform: scale(1.1); 
-    /* 살짝 밝아지거나 그림자 효과를 주고 싶을 때 추가 (선택사항) */
     filter: brightness(1.1);
 }
 
-/* 클릭했을 때 살짝 눌리는 느낌 (선택사항) */
-.detail-button:active {
-    transform: scale(0.95);
+/* --- [추가] Portfolio 1 특정 좌표 클릭 영역 --- */
+.custom-area-link-1 {
+    position: absolute;
+    display: block;
+    left: 240px;      /* x: 240px */
+    top: 600px;       /* y: 568px */
+    width: 569px;     /* w: 569px */
+    height: 25px;    /* h: 254px */
+    z-index: 60;
+    cursor: pointer;
+}
+
+/* --- [추가] Portfolio 2 특정 좌표 클릭 영역 --- */
+.custom-area-link-2 {
+    position: absolute;
+    display: block;
+    left: 240px;      /* x: 240px */
+    top: 600px;       /* y: 568px */
+    width: 438px;     /* w: 438px */
+    height: 25px;      /* h: 25px */
+    z-index: 60;
+    cursor: pointer;
+    /* 영역 확인용 (필요시 주석 해제) */
+    /* background-color: rgba(0, 0, 255, 0.2); */
 }
