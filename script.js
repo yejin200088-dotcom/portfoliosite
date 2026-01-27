@@ -10,6 +10,7 @@ const toggleImg = document.getElementById("toggleImg");
 
 let app;
 
+// 1. 초기화
 async function initApp() {
     try {
         if (!canvasEl) return;
@@ -23,6 +24,7 @@ async function initApp() {
 
 let stopTimeout;
 
+// 2. 물결 효과 (딜레이 제거 및 속도 향상 버전)
 function playRipple(newPath, seconds = 1.2, isQuick = true) {
     if (!app || !app.liquidPlane) return;
     clearTimeout(stopTimeout);
@@ -31,10 +33,12 @@ function playRipple(newPath, seconds = 1.2, isQuick = true) {
     const stopDuration = isQuick ? 1200 : 2500; 
 
     if (newPath) {
-        staticImg.style.transition = `opacity ${isQuick ? '0.7s' : '1.2s'} ease-in-out`;
+        // 이미지가 더 빨리 반응하도록 트랜지션 단축
+        staticImg.style.transition = `opacity ${isQuick ? '0.3s' : '0.5s'} ease-in-out`;
         staticImg.style.opacity = '0'; 
         app.liquidPlane.uniforms.displacementScale.value = 0;
         
+        // 딜레이 없이 즉시 로드
         setTimeout(() => {
             staticImg.src = newPath;
             app.loadImage(newPath);
@@ -43,11 +47,11 @@ function playRipple(newPath, seconds = 1.2, isQuick = true) {
 
             let val = 0;
             const fadeIn = setInterval(() => {
-                val += isQuick ? 0.08 : 0.05; 
+                val += isQuick ? 0.15 : 0.1; // 수치 증가폭 높임
                 if (app && app.liquidPlane) app.liquidPlane.uniforms.displacementScale.value = val;
                 if (val >= maxStrength) clearInterval(fadeIn);
-            }, 30);
-        }, isQuick ? 350 : 600);
+            }, 16); // 간격을 줄여서 더 빠르게
+        }, 0); 
     } else {
         canvasEl.style.opacity = '1';
         app.liquidPlane.uniforms.displacementScale.value = maxStrength;
@@ -75,6 +79,7 @@ function playRipple(newPath, seconds = 1.2, isQuick = true) {
     }, seconds * 1000);
 }
 
+// 3. 카루셀 제어
 function initCarousel(carouselId) {
     const carousel = document.getElementById(carouselId);
     if (!carousel) return { reset: () => {} };
@@ -110,16 +115,14 @@ function initCarousel(carouselId) {
 const carouselAbout = initCarousel('aboutCarousel');
 const carouselPortfolio = initCarousel('portfolioCarousel');
 
-// --- [추가된 휠 이벤트 로직] ---
+// 휠 스크롤 (팝업 시 가드 로직 추가)
 let isScrolling = false;
 window.addEventListener('wheel', (e) => {
-    // 메뉴가 열려있을 때는 작동 방지
     if (nav && nav.classList.contains('active')) return;
-    
-    // 연속 스크롤 방지 (0.5초 대기)
+    // [중요] 팝업창이 열려 있으면 휠 스크롤로 슬라이드 넘기지 않음
+    if (popup && popup.classList.contains('show')) return;
     if (isScrolling) return;
 
-    // 현재 화면에 표시되고 있는 카루셀 찾기
     const activeCarousel = (aboutCarousel.style.display === 'block') ? aboutCarousel : 
                            (portfolioCarousel.style.display === 'block') ? portfolioCarousel : null;
 
@@ -129,27 +132,18 @@ window.addEventListener('wheel', (e) => {
     const nextBtn = activeCarousel.querySelector('.next');
 
     if (e.deltaY > 0) {
-        // 아래로 굴림 -> 다음 슬라이드
-        if (nextBtn && nextBtn.style.display !== 'none') {
-            nextBtn.click();
-            triggerScrollLock();
-        }
+        if (nextBtn && nextBtn.style.display !== 'none') { nextBtn.click(); triggerScrollLock(); }
     } else {
-        // 위로 굴림 -> 이전 슬라이드
-        if (prevBtn && prevBtn.style.display !== 'none') {
-            prevBtn.click();
-            triggerScrollLock();
-        }
+        if (prevBtn && prevBtn.style.display !== 'none') { prevBtn.click(); triggerScrollLock(); }
     }
 }, { passive: true });
 
-// 스크롤 감도 조절을 위한 잠금 함수
 function triggerScrollLock() {
     isScrolling = true;
-    setTimeout(() => { isScrolling = false; }, 500); // 0.5초 동안 추가 휠 무시
+    setTimeout(() => { isScrolling = false; }, 500);
 }
-// ------------------------------
 
+// 메뉴 이동
 document.getElementById('goAbout')?.addEventListener('click', (e) => {
     e.preventDefault();
     if (portfolioCarousel) portfolioCarousel.style.display = 'none';
@@ -176,5 +170,39 @@ if (toggle) {
         if (toggleImg) toggleImg.src = nav.classList.contains("active") ? "image/hamburgerout.png" : "image/hamburgerin.png";
     });
 }
+
+// 4. 팝업 제어 로직
+const popup = document.getElementById("popup");
+const popupDim = document.getElementById("popupDim");
+const popupImg = document.getElementById("popupImg");
+const popupClose = document.getElementById("popupClose");
+
+function openPopup(imgSrc) {
+    if (!imgSrc) return;
+    popupImg.src = imgSrc;
+    popup.scrollTop = 0;
+    popup.classList.add("show");
+    popupDim.classList.add("show");
+    document.body.classList.add("no-scroll");
+}
+
+function closePopup() {
+    popup.classList.remove("show");
+    popupDim.classList.remove("show");
+    document.body.classList.remove("no-scroll");
+}
+
+document.querySelectorAll(".detail-button").forEach((btn) => {
+    btn.addEventListener("click", function(e) {
+        const landingImg = this.getAttribute("data-popup");
+        if (landingImg) {
+            e.preventDefault();
+            openPopup(landingImg);
+        }
+    });
+});
+
+if (popupClose) popupClose.onclick = closePopup;
+if (popupDim) popupDim.onclick = closePopup;
 
 initApp();
