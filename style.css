@@ -213,9 +213,9 @@ body.no-scroll { overflow: hidden !important; }
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0.9);
-    width: 90%; 
-    height: 90%;
-    max-width: 1200px;
+    width: 95%; 
+    height: 80%;
+    max-width: 1000px;
     background: #000;
     z-index: 9999;
     border-radius: 40px; /* 네 면 둥글게 */
@@ -247,8 +247,8 @@ body.no-scroll { overflow: hidden !important; }
 /* 화면에 고정된 닫기 버튼 */
 .popup-close {
     position: fixed;
-    top: 40px;
-    right: 50px;
+    top: 105px;
+    right: 370px;
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     color: #fff;

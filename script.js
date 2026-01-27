@@ -149,7 +149,7 @@ document.getElementById('goAbout')?.addEventListener('click', (e) => {
     if (portfolioCarousel) portfolioCarousel.style.display = 'none';
     if (aboutCarousel) aboutCarousel.style.display = 'block';
     carouselAbout.reset(); 
-    playRipple('image/aboutme1.jpg', 1.0, true); 
+    playRipple('image/aboutme1.jpg', 0.7, true); 
     nav?.classList.remove('active');
     if (toggleImg) toggleImg.src = "image/hamburgerin.png";
 });
@@ -159,7 +159,7 @@ document.getElementById('goPortfolio')?.addEventListener('click', (e) => {
     if (aboutCarousel) aboutCarousel.style.display = 'none';
     if (portfolioCarousel) portfolioCarousel.style.display = 'block';
     carouselPortfolio.reset(); 
-    playRipple('image/portfolio1.jpg', 1.0, true);
+    playRipple('image/portfolio1.jpg', 0.7, true);
     nav?.classList.remove('active');
     if (toggleImg) toggleImg.src = "image/hamburgerin.png";
 });
